@@ -1,0 +1,70 @@
+{% extends "layouts/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ hotel }}{% endblock %}
+
+{% block content %}
+    <!-- Link de volver a la lista -->
+    <a href="{% url "listado_hoteles" %}" class="text-info position-absolute top-0 start-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5" />
+        </svg>
+        Volver
+    </a>
+    <h1 class="mt-3 text-center">{{ hotel }}</h1>
+    <hr>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Información del hotel</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-4 mt-3">
+                        <img src="{% if hotel.imagen %}{{ hotel.imagen.url }}{% else %}{% static "img/hotel.jpg" %}{% endif %}" alt="Hotel 1" class="img-fluid">
+                    </div>
+                    <div class="col-12 col-md-4 mt-3">
+                        <p><strong>Nombre:</strong> {{ hotel }}</p>
+                        <p><strong>Comuna:</strong> {{ hotel.comuna }}</p>
+                        <p><strong>Dirección:</strong> {{ hotel.direccion }}</p>
+                        <p><strong>Teléfono:</strong> {{ hotel.telefono }}</p>
+                        <p><strong>Habitaciones:</strong> {{ hotel.cantHabitaciones }}</p>
+                    </div>
+                    <div class="col-12 col-md-4 mt-3">
+                        <div class="d-flex flex-column px-5 gap-3">
+                            <a href="{% url "tipo-habitaciones" hotel.pk %}" class="btn btn-primary py-3">Ver tipos de
+                                habitaciones</a>
+                            <a href="{% url "habitaciones" hotel.pk %}" class="btn btn-secondary py-3">Ver
+                                habitaciones</a>
+                            <a href="{% url "modificar-hotel" hotel.pk %}" class="btn btn-warning py-3">Editar</a>
+                            <button class="btn btn-danger py-3" data-id="{{ hotel.pk }}" data-name="{{ hotel.nombre }}" data-bs-toggle="modal" data-bs-target="#modalEliminar">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalEliminar" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+        role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitleId">
+                        Eliminar hotel
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">¿Está seguro que desea eliminar <strong id="mensajeBorrar"></strong>?</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <a href="" id="btnConfirmarBorrar" type="button" class="btn btn-danger">Borrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "layouts/base.html" %}
+
+{% load static %}
+
+{% block title %}Listado de hoteles{% endblock %}
+
+{% block content %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>
+                {% if message.tags == "warning" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                </svg>
+                {% elif message.tags == "success" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
+                </svg>
+                {% endif %}
+            </strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+    <h1 class="text-center mt-5">Listado de hoteles</h1>
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-inline-flex">
+                    <h2 class="card-title">Hoteles registrados</h2>
+                    <div class="ms-auto">
+                        <a href="{% url "agregar-hotel" %}" class="btn btn-secondary">Agregar hotel</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if hoteles %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Comuna</th>
+                                    <th>Dirección</th>
+                                    <th>Teléfono</th>
+                                    <th>Habitaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hotel in hoteles %}
+                                <tr>
+                                    <td>{{ hotel.pk }}</td>
+                                    <td><img src="{% if hotel.imagen %}{{ hotel.imagen.url }}{% else %}{% static "
+                                            img/hotel.jpg" %}{% endif %}" height="100" width="100" alt="Imagen"></td>
+                                    <td>{{ hotel.nombre }}</td>
+                                    <td>{{ hotel.comuna }}</td>
+                                    <td>{{ hotel.direccion }}</td>
+                                    <td>{{ hotel.telefono }}</td>
+                                    <td>{{ hotel.cantHabitaciones }}</td>
+                                    <td>
+                                        <a href="{% url "hotel" hotel.pk %}" class="btn btn-primary">Ver hotel</a>
+                                        <a href="{% url "modificar-hotel" hotel.pk %}" class="btn btn-warning">Editar</a>
+                                        <button class="btn btn-danger" data-id="{{ hotel.pk }}" data-name="{{ hotel.nombre }}" data-bs-toggle="modal" data-bs-target="#modalEliminar">Eliminar</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <h3>No hay hoteles registrados.</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalEliminar" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+        role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitleId">
+                        Eliminar hotel
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">¿Está seguro que desea eliminar <strong id="mensajeBorrar"></strong>?</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <a href="" id="btnConfirmarBorrar" type="button" class="btn btn-danger">Borrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
