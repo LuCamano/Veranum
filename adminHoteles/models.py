@@ -104,6 +104,13 @@ class Habitacion(models.Model):
         verbose_name = "Habitación"
         verbose_name_plural = "Habitaciones"
 
+    def save(self, *args, **kwargs):
+        existentes = Habitacion.objects.filter(numero=self.numero)
+        for habitacion in existentes:
+            if habitacion.id != self.id and habitacion.hotel == self.hotel:
+                raise Exception("Ya existe una habitación con ese número en el hotel seleccionado")
+        return super().save(*args, **kwargs)
+
 class ServicioAdicional(models.Model):
     nombre = models.CharField("Nombre", max_length=50)
     def __str__(self):

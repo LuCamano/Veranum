@@ -1,5 +1,8 @@
 {% extends "layouts/base.html" %}
 
+{% load utils %}
+{% load crispy_forms_tags %}
+
 {% block title %}Tipos de habitaciones {{ hotel.nombre }}{% endblock %}
 
 {% block content %}
@@ -12,28 +15,41 @@
         Volver
     </a>
     <a href="{% url "hotel" hotel.pk %}" class="text-dark text-decoration-none"><h1 class="text-center mt-5">{{ hotel.nombre }}</h1></a>
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>
+                {% if message.tags == "warning" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                </svg>
+                {% elif message.tags == "success" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
+                </svg>
+                {% endif %}
+            </strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
     <div class="row mt-5">
-        <div class="col-12">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    <strong>
-                        {% if message.tags == "warning" %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
-                            <path
-                                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-                        </svg>
-                        {% elif message.tags == "success" %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-info-circle-fill" viewBox="0 0 16 16">
-                            <path
-                                d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
-                        </svg>
-                        {% endif %}
-                    </strong> {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="col-12 col-md-3 me-md-auto mb-3">
+            <form class="card" method="get">
+                <div class="card-header">
+                    <h2 class="card-title">Filtrar</h2>
                 </div>
-            {% endfor %}
+                <div class="card-body">
+                    {{ filtro|crispy }}
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" type="submit">Filtrar</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 col-md-9">
             <div class="card">
                 <div class="card-header d-inline-flex">
                     <h2 class="card-title">Tipos de habitaciones</h2>
@@ -61,7 +77,7 @@
                                         <tr>
                                             <td>{{ tipo.id }}</td>
                                             <td>{{ tipo.nombre }}</td>
-                                            <td>${{ tipo.precio }}</td>
+                                            <td>${{ tipo.precio|format_number }}</td>
                                             <td>{{ tipo.cantidadCamas }}</td>
                                             <td>{{ tipo.cantidadBanos }}</td>
                                             <td>{% for servicio in tipo.servicios.all %}{{ servicio.nombre }} {% endfor %}</td>

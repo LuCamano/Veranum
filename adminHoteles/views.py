@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import HabitacionForm, TipoHabitacionForm, HotelForm
 from .models import Habitacion, TipoHabitacion, Hotel
+from .filters import HotelFilter, TipoHabitacionFilter, HabitacionFilter
 # Create your views here.
 def listado_hoteles(request):
     hoteles = Hotel.objects.all()
+    filtro = HotelFilter(request.GET, queryset=hoteles)
     context = {
-        'hoteles': hoteles
+        'hoteles': filtro.qs,
+        'filtro': filtro.form
     }
     return render(request, 'adminHoteles/listado hoteles.html', context)
 
@@ -60,24 +63,27 @@ def vista_hotel(request, id):
 
 def listado_habitaciones(request, id):
     hotel = Hotel.objects.get(pk=id)
-    habitaciones = Habitacion.objects.filter(tipo__hotel=hotel)
+    habitaciones = Habitacion.objects.filter(tipo__hotel=hotel).order_by('numero')
+    filtro = HabitacionFilter(request.GET, queryset=habitaciones, hotel=hotel)
     context = {
         'hotel': hotel,
-        'habitaciones': habitaciones
+        'habitaciones': filtro.qs,
+        'filtro': filtro.form
     }
     return render(request, 'adminHoteles/listado habitaciones.html', context)
 
 def agregar_habitacion(request, id):
     form = HabitacionForm(hotel_id=id)
-    if request.method == 'POST':
-        form = HabitacionForm(request.POST, hotel_id=id)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Habitacion agregada correctamente')
-            return redirect('habitaciones', id=id)
-        else:
-            messages.error(request, 'Error al agregar la habitacion')
-            return redirect('agregar-habitacion', id=id)
+    try:
+        if request.method == 'POST':
+            form = HabitacionForm(request.POST, hotel_id=id)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Habitacion agregada correctamente')
+                return redirect('habitaciones', id=id)
+    except Exception as e:
+        messages.warning(request, "Error: " + str(e))
+        return redirect('agregar-habitacion', id=id)
     context = {
         'form': form,
         'titulo': 'Agregar Habitacion'
@@ -111,9 +117,11 @@ def eliminar_habitacion(request, id, hid):
 def tipo_habitaciones(request, id):
     hotel = Hotel.objects.get(pk=id)
     tipos = TipoHabitacion.objects.filter(hotel=hotel)
+    filtro = TipoHabitacionFilter(request.GET, queryset=tipos)
     context = {
         'hotel': hotel,
-        'tipos': tipos,
+        'tipos': filtro.qs,
+        'filtro': filtro.form
     }
     return render(request, 'adminHoteles/tipos habitaciones.html', context)
 

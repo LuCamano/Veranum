@@ -2,3 +2,4 @@ adminHoteles/__pycache__/
 adminHoteles/migrations/__pycache__/
 core/__pycache__/
 venv/
+adminHoteles/templatetags/__pycache__/

@@ -1,6 +1,7 @@
 {% extends "layouts/base.html" %}
 
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}Listado de hoteles{% endblock %}
 
@@ -27,7 +28,20 @@
     {% endfor %}
     <h1 class="text-center mt-5">Listado de hoteles</h1>
     <div class="row mt-5">
-        <div class="col-12">
+        <div class="col-12 col-md-3 me-md-auto mb-3">
+            <form class="card" method="get">
+                <div class="card-header">
+                    <h2 class="card-title">Filtrar</h2>
+                </div>
+                <div class="card-body">
+                    {{ filtro|crispy }}
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" type="submit">Filtrar</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 col-md-9">
             <div class="card">
                 <div class="card-header d-inline-flex">
                     <h2 class="card-title">Hoteles registrados</h2>
@@ -73,7 +87,7 @@
                         </table>
                     </div>
                     {% else %}
-                    <h3>No hay hoteles registrados.</h3>
+                    <h3>No se encontraron hoteles.</h3>
                     {% endif %}
                 </div>
             </div>
